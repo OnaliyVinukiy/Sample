@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { signInStart, signInSuccess, signInFailure, signOutUserStart, signOutUserSuccess } from '../redux/user/userSlice';
-
+import { initialState } from '../redux/user/userSlice';
 const Header = () => {
   const { loading, error, currentUser } = useSelector((state) => state.user);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -44,14 +44,21 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       dispatch(signOutUserStart()); // Dispatch signOutUserStart
-      await msalInstance.logout();
+      await msalInstance.logout(); // Logout using MSAL instance
       dispatch(signOutUserSuccess()); // Dispatch signOutUserSuccess
-      localStorage.clear(); // Clear all items from local storage
+  
+      // Reset currentUser to null after logout
+      dispatch(signOutUserSuccess()); // Dispatch signOutUserSuccess
+      console.log(initialState);
       navigate("/login");
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
+  
+  
+  
+  
   
 
   
