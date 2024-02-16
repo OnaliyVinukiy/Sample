@@ -43,14 +43,18 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
+      dispatch(signOutUserStart()); // Dispatch signOutUserStart
       await msalInstance.logout();
-      dispatch(signOutUserSuccess()); // Update to dispatch signOutUserSuccess
+      dispatch(signOutUserSuccess()); // Dispatch signOutUserSuccess
+      localStorage.clear(); // Clear all items from local storage
       navigate("/login");
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
+  
 
+  
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -58,28 +62,28 @@ const Header = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      dispatch(signInStart());
-      const res = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
-        return;
-      }
-      dispatch(signInSuccess(data));
-      navigate("/");
-    } catch (error) {
-      dispatch(signInFailure(error.message));
-    }
-  };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     dispatch(signInStart());
+  //     const res = await fetch("/api/auth/signin", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     const data = await res.json();
+  //     if (data.success === false) {
+  //       dispatch(signInFailure(data.message));
+  //       return;
+  //     }
+  //     dispatch(signInSuccess(data));
+  //     navigate("/");
+  //   } catch (error) {
+  //     dispatch(signInFailure(error.message));
+  //   }
+  // };
 
   const handleDropdownToggle = () => {
     setIsDropdownVisible(!isDropdownVisible);
@@ -310,28 +314,17 @@ const Header = () => {
               <li class="flex items-center mr-0">
                 <a href="#" class="block py-2 px-3 text-black text-black md:text-lg rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-600 md:p-0 text-black md:hover:text-green-600">Events</a>
               </li>
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {/* <form onSubmit={handleSubmit} className="flex flex-col gap-4"> */}
         <li className="mr-0">
-          {/* Conditionally render the button based on authentication status */}
-          {currentUser ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-1.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 mr-0"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleMicrosoftLogin}
-              className="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-1.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 mr-0"
-            >
-              Login
-            </button>
-          )}
+        <button
+        type="button"
+        onClick={currentUser ? handleLogout : handleMicrosoftLogin}
+        className="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-1.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 mr-0"
+      >
+        {currentUser ? "Logout" : "Login"}
+      </button>
         </li>
-      </form>
+      {/* </form> */}
             </ul>
           </div>
         </div>
